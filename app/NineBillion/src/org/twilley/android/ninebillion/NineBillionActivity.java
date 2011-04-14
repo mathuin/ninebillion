@@ -73,7 +73,6 @@ public class NineBillionActivity extends Activity {
     				// TODO Auto-generated catch block
     				e.printStackTrace();
     			}
-    			// will stop service
         	}
         });
         resetButton = (Button)this.findViewById(R.id.resetbutton);
@@ -88,6 +87,7 @@ public class NineBillionActivity extends Activity {
     	        try {
     	        	Log.d(TAG, "sending name transact request to service");
     				mBoundService.mBinder.transact(NineBillionService.NineBillionBinder.SET, nameData, null, 0);
+        			startstopButton.setText("Start");
     			} catch (RemoteException e) {
     				// TODO Auto-generated catch block
     				e.printStackTrace();
@@ -170,17 +170,12 @@ public class NineBillionActivity extends Activity {
     /** Listens for service messages */
 	private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
 		@Override
-	    public void onReceive(Context context, Intent intent) {
-			Log.v(TAG, "entered onReceive");
-			
+	    public void onReceive(Context context, Intent intent) {		
 			String action = intent.getAction();
 			Bundle extras = intent.getExtras();
 			
 			if (action.equals(NineBillionService.UPDATENAME)) {
-				Log.i(TAG, "received intent to update name");
-				
 				byte[] newName = extras.getByteArray(NineBillionService.NAME);
-				Log.d(TAG, "name is " + new String(newName));
 				
 				// update the name view
 				updateNameView(newName);
@@ -300,6 +295,4 @@ public class NineBillionActivity extends Activity {
 		});
 		builder.create().show();
 	}
-
-
 }
