@@ -4,19 +4,25 @@ import org.twilley.android.ninebillion.NineBillionService;
 import org.twilley.android.ninebillion.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,7 +31,8 @@ import android.widget.TextView;
 public class NineBillionActivity extends Activity {
 	private static final String TAG = "NineBillionActivity";
 	private static final String NAME = "Name";
-	static final byte[] start = {'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'};
+	private static final String start = "AAAAAAAAA";
+	private static final int MENU_INFO = 0;
 	private SharedPreferences app_preferences;
 	private Button startstopButton;
 	private Button resetButton;
@@ -73,7 +80,7 @@ public class NineBillionActivity extends Activity {
         resetButton.setOnClickListener(new OnClickListener() {
         	@Override
         	public void onClick(View v) {
-    			byte[] name = app_preferences.getString(NAME, new String(start)).getBytes();
+    			byte[] name = app_preferences.getString(NAME, start).getBytes();
     	        Bundle nameValues = new Bundle();
     	        nameValues.putByteArray(NineBillionService.NineBillionBinder.NAME, name);
     	        Parcel nameData = Parcel.obtain();
@@ -195,7 +202,7 @@ public class NineBillionActivity extends Activity {
 	        mBoundService = ((NineBillionService.NineBillionBinder)service).getService();
 
 	        // now set the name
-			byte[] name = app_preferences.getString(NAME, new String(start)).getBytes();
+			byte[] name = app_preferences.getString(NAME, start).getBytes();
 	        Bundle nameValues = new Bundle();
 	        nameValues.putByteArray(NineBillionService.NineBillionBinder.NAME, name);
 	        Parcel nameData = Parcel.obtain();
@@ -238,4 +245,61 @@ public class NineBillionActivity extends Activity {
 	        mIsBound = false;
 	    }
 	}   
+
+	/** build options menu during OnCreate */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		Log.v(TAG, "entered onCreateOptionsMenu");
+		
+		// add info
+		menu.add(0, MENU_INFO, 0, R.string.menu_info);
+		
+		return true;
+	}
+	
+	/** invoked when user selects item from menu */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		Log.v(TAG, "entered onOptionsItemSelected");
+		
+		// display info
+		switch (item.getItemId()) {
+		case MENU_INFO:
+			// display info
+			showAbout(this);
+			return true;
+		default:
+			// should never reach here...
+			return false;
+		}
+	}
+
+	/** displays "about..." page */
+	private void showAbout(final Activity activity) {
+		Log.v(TAG, "entered showAbout");
+		
+		final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		PackageManager pm = getPackageManager();
+		String versionName;
+		try {
+			versionName = pm.getPackageInfo(getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+			Log.w(TAG, "PackageManager threw NameNotFoundException");
+			versionName = "";
+		}
+
+		builder.setTitle(getString(R.string.about_title) + " " + getString(R.string.app_name) + " " + versionName);
+		builder.setMessage(R.string.about_body);
+		builder.setPositiveButton(R.string.about_dismiss_button, 
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						;
+					}
+		});
+		builder.create().show();
+	}
+
+
 }

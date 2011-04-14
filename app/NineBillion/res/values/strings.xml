@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, ninebillion!</string>
     <string name="app_name">Nine Billion Names of God</string>
-    
     <string name="headertop">Automatic Sequence Computer</string>
     <string name="headerbot">Mark VI</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="reset">Reset</string>
     <string name="body">The product of many years of research and labor, the Mark VI is capable of carrying out any routine mathematical operation in excess of twelve digits.  The output circuits on this model have been modified to print words, not columns of figures.  Each permutation of nine letters (excepting those with four or more consecutive letters) shall be printed.  What happens at the end?  Wait and see...</string>
+    <string name="menu_info">Info</string>
+    <string name="about_title">About</string>
+    <string name="about_body">This Android app implements the algorithm described in &quot;The Nine Billion Names of God&quot; by Arthur C. Clarke.  Enjoy!</string>
+    <string name="about_dismiss_button">Dismiss</string>
 </resources>
