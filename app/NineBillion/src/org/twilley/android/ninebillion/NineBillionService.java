@@ -13,7 +13,6 @@ public class NineBillionService extends Service {
 	private static final String TAG = "NineBillionService";
 	private static final byte[] goodbye = {'G', 'O', 'O', 'D', ' ', 'B', 'Y', 'E', '!'};
 	static final String UPDATENAME = "org.twilley.android.ninebillion.updatename";
-	static final String RESETNAME = "org.twilley.android.ninebillion.resetname";
 	static final String NAME = "Name";
 	private byte[] name = new byte[9];
 	private boolean done = false;
@@ -39,18 +38,15 @@ public class NineBillionService extends Service {
 			case SET:
 				values = data.readBundle();
 				newName = values.getByteArray(NAME);
-				Log.i(TAG, "request to change name from " + new String(name) + " to " + new String(newName));
 				mHandler.removeCallbacks(nameIterator);
 				name = newName;
 				updateName(name);
 				returnCode = true;
 				break;
 			case START:
-				Log.i(TAG, "request to start iterator");
 				mHandler.post(nameIterator);
 				break;
 			case STOP:
-				Log.i(TAG, "request to stop iterator");
 				mHandler.removeCallbacks(nameIterator);
 				break;
 			}
@@ -68,23 +64,18 @@ public class NineBillionService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.v(TAG, "entered onCreate");
-
+		
 		// configure handler
 		mHandler = new Handler();
 	}
 
 	@Override
 	public void onStart(Intent intent, int startId) {
-		Log.v(TAG, "entered onStart");
-
 		Log.d(TAG, "intent: " + intent + ", startId: " + startId);
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.v(TAG, "entered onDestroy");
-
 		// drop the mHandler stuff
 		mHandler.removeCallbacks(nameIterator);
 	}
@@ -96,16 +87,12 @@ public class NineBillionService extends Service {
 	private void updateName(byte[] newName) {
 		Intent intent = new Intent(UPDATENAME);
 		intent.putExtra(NAME, newName);
-		Log.i(TAG, "sending broadcast" + intent);
-		Log.v(TAG, "name is " + new String(newName));
 		sendBroadcast(intent);
 	}
 	
 	/** Iterates through names */
 	private final Runnable nameIterator = new Runnable() {
 		public void run() {
-			Log.v(TAG, "entered run");
-
 			// check the current name through
 	    	if (!done) {
 	    		int index = isValid(name);
@@ -132,7 +119,6 @@ public class NineBillionService extends Service {
 	 * @param index  The index is the byte which needs incrementing. 
 	 */
     public byte[] next(byte[] oldname, int index) throws LastTrumpException {
-    	Log.v(TAG, "oldname is " + new String(oldname));
     	byte[] newname = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
     	for (int i = 0; i < 9; i++)
     		newname[i] = oldname[i];
@@ -142,7 +128,6 @@ public class NineBillionService extends Service {
     		else
     			newname = next(oldname, index-1);
     	else {
-    		Log.v(TAG, "newname[index] is " + newname[index]);
     		newname[index]++;
     		for (int i = index+1; i < 9; i++)
     			newname[i] = 'A';
